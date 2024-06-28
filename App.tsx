@@ -41,7 +41,7 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handlePress} style={styles.button}>
+      <TouchableOpacity onPress={handlePress} style={[styles.button, loading ? {backgroundColor: 'grey'} : null, completed ? {backgroundColor:'transparent', borderWidth: 0}: null]}>
         {!loading && !showWhiteIcon && !completed && (
           <Text style={styles.buttonText}>Press this button</Text>
         )}
@@ -69,9 +69,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor:'white'
   },
   button: {
-    backgroundColor: '#007AFF',
+    borderColor:'grey',
+    borderWidth: 1,
+    backgroundColor:'black',
     // padding: 15,
     height: 50,
     width:'50%',
