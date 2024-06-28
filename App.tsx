@@ -1,67 +1,97 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
+import CheckBoxGreen from './src/assets/CheckBoxGreen.svg'
+import CheckBoxWhite from './src/assets/CheckBoxWhite.svg'
 
-import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import AnimatedSvgIcons from './src/AnimatedSvgIcons';
+const App = () => {
+  const [loading, setLoading] = useState(false);
+  const [completed, setCompleted] = useState(false);
+  const [showWhiteIcon, setShowWhiteIcon] = useState(false);
+  const animatedValue = useSharedValue(0);
 
-function App() {
-  const [isButtonPressed, setIsButtonPressed] = useState(false)
-  const [isApiSuccessful, setIsApiSuccessful] = useState(false)
-  const onPress = () => {
-    const timer1 = setTimeout(() => {
-      setIsButtonPressed(true)
-    }, 1000);
-    const timer2 = setTimeout(() => {
-      setIsApiSuccessful(true)
-    }, 2000);
-    // Cleanup timers if component unmounts or trigger changes
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
-  }
+  const handleAnimationEnd = () => {
+    setCompleted(true);
+  };
+
   useEffect(() => {
-    console.log('isApiSuccessful changed', isApiSuccessful);
-  }, [isApiSuccessful])
+    if (showWhiteIcon) {
+      animatedValue.value = withTiming(1, {
+        duration: 500,
+        easing: Easing.linear,
+      }, () => {
+        runOnJS(handleAnimationEnd)();
+      });
+    }
+  }, [showWhiteIcon]);
+
+  const handlePress = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setShowWhiteIcon(true);
+    }, 2000);
+  };
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: animatedValue.value * -50 }], // Adjust this value for the desired translation
+    };
+  });
+
   return (
-    <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ backgroundColor: 'white', flex: 1 }}>
-        <TouchableOpacity onPress={onPress} style={[styles.button, isButtonPressed ? { backgroundColor: 'yellow' } : null]} >
-          {isApiSuccessful ? <AnimatedSvgIcons /> :
-            isButtonPressed ? <ActivityIndicator color='black' size='small' /> : <Text style={styles.text}>Press this button</Text>}
-        </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={handlePress} style={styles.button}>
+        {!loading && !showWhiteIcon && !completed && (
+          <Text style={styles.buttonText}>Press this button</Text>
+        )}
+        {loading && (
+          <ActivityIndicator size="small" color="#FFFFFF" />
+        )}
+        {showWhiteIcon && !completed && (
+          <Animated.View style={[animatedStyle]}>
+            <CheckBoxWhite/>
+          </Animated.View>
+        )}
+        {!loading && completed && (
+          <View style={styles.completedContainer}>
+            <CheckBoxGreen/>
+            <Text style={styles.completedText}>Task Completed</Text>
+          </View>
+        )}
+      </TouchableOpacity>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  button: {
-    borderWidth: 1,
-    borderColor: 'black',
-    height: 100,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'center'
   },
-  text: {
-    color: 'black',
-    fontSize: 20
+  button: {
+    backgroundColor: '#007AFF',
+    // padding: 15,
+    height: 50,
+    width:'50%',
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
+  completedContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  completedText: {
+    color: 'green',
+    marginLeft: 10,
+    fontSize: 16,
   },
 });
 
