@@ -29,10 +29,10 @@ const AnimatedSvgIcons = ({ }) => {
   return (
     <View style={styles.container}>
       <AnimatedSvg width={100} height={100} style={[styles.icon, animatedStyle]}>
-        <CheckBoxWhite />
+        <CheckBoxGreen />
       </AnimatedSvg>
       <AnimatedSvg width={100} height={100} style={[styles.icon, { opacity: 1 - opacity.value }]}>
-        <CheckBoxGreen />
+        <CheckBoxWhite />
       </AnimatedSvg>
     </View>
   );
