@@ -78,9 +78,12 @@ const AnimatedButton = () => {
             }}
           >
             {/* <Icon name={buttonState === 'icon' ? "check-circle" : "check"} size={24} color="white" /> */}
-            {buttonState === 'icon' ? <CheckBoxWhite/> : <CheckBoxGreen/>}
+            {buttonState === 'icon' && <CheckBoxWhite/>}
             {buttonState === 'final' && (
-              <Text style={{ marginLeft: 10, color: 'green' }}>Action completed</Text>
+              <View style={{flexDirection:'row', alignItems:'center'}} >
+                <CheckBoxGreen/>
+                <Text style={{ marginLeft: 10, color: 'green' }}>Action completed</Text>
+              </View>
             )}
           </Animated.View>
         );
