@@ -4,7 +4,7 @@ import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming, runOnJS
 import CheckBoxGreen from './src/assets/CheckBoxGreen.svg'
 import CheckBoxWhite from './src/assets/CheckBoxWhite.svg'
 import MyButton from './src/components/MyButton';
-import AnimatedButton from './src/components/MyButton2';
+import AnimatedButton from './src/components/AnimatedButton';
 
 const App = () => {
   const [loading, setLoading] = useState(false);
