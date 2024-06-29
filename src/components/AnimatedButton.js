@@ -44,7 +44,7 @@ const AnimatedButton = () => {
         setButtonState('final');
         Animated.parallel([
           Animated.timing(iconPosition, {
-            toValue: -22,
+            toValue: -10,
             duration: 500,
             useNativeDriver: true,
           }),
