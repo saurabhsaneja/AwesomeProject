@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
-import CheckBoxGreen from './src/assets/CheckBoxGreen.svg'
-import CheckBoxWhite from './src/assets/CheckBoxWhite.svg'
+import CheckBoxGreen from './src/assets/CheckBoxGreen.svg';
+import CheckBoxWhite from './src/assets/CheckBoxWhite.svg';
 import MyButton from './src/components/MyButton';
-import AnimatedButton from './src/components/AnimatedButton';
-import AnimatedButton2 from './src/components/AnimatedButton2';
 
 const App = () => {
   const [loading, setLoading] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [showWhiteIcon, setShowWhiteIcon] = useState(false);
   const animatedValue = useSharedValue(0);
+  const opacityValue = useSharedValue(0.5); // For text opacity
+  const bgOpacityValue = useSharedValue(1); // For background opacity
 
   const handleAnimationEnd = () => {
     setCompleted(true);
+    opacityValue.value = withTiming(1, {
+      duration: 500,
+      easing: Easing.linear,
+    });
+    bgOpacityValue.value = withTiming(0, {
+      duration: 500,
+      easing: Easing.linear,
+    });
   };
 
   useEffect(() => {
@@ -38,33 +46,46 @@ const App = () => {
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: animatedValue.value * -50 }], // Adjust this value for the desired translation
+      transform: [{ translateX: animatedValue.value * -50 }],
+    };
+  });
+
+  const textOpacityStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacityValue.value,
+    };
+  });
+
+  const buttonBackgroundStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: `rgba(0, 0, 0, ${bgOpacityValue.value})`,
     };
   });
 
   return (
     <View style={styles.container}>
-      <AnimatedButton2/>
-      <AnimatedButton/>
-      <TouchableOpacity onPress={handlePress} style={[styles.button, loading || showWhiteIcon ? {backgroundColor: 'grey'} : null, completed ? {backgroundColor:'transparent', borderWidth: 0}: null]}>
+      <TouchableOpacity onPress={handlePress} style={[styles.button, loading || showWhiteIcon ? { backgroundColor: 'grey' } : null, completed ? { backgroundColor: 'transparent', borderWidth: 0 } : null]}>
         {!loading && !showWhiteIcon && !completed && (
           <Text style={styles.buttonText}>Press this button</Text>
         )}
         {loading && (
           <ActivityIndicator size="small" color="#FFFFFF" />
         )}
-        {showWhiteIcon && !completed && (
+        {showWhiteIcon && (
           <Animated.View style={[animatedStyle]}>
-            <CheckBoxWhite/>
+            <CheckBoxWhite />
           </Animated.View>
         )}
         {!loading && completed && (
-          <View style={styles.completedContainer}>
-            <CheckBoxGreen/>
-            <Text style={styles.completedText}>Task Completed</Text>
-          </View>
+          // <View style={styles.completedContainer}>
+            <Animated.View style={[styles.completedContainer, textOpacityStyle]}>
+              <CheckBoxGreen />
+              <Text style={styles.completedText}>Task Completed</Text>
+            </Animated.View>
+          // </View>
         )}
       </TouchableOpacity>
+      {/* <Animated.View style={[StyleSheet.absoluteFill, buttonBackgroundStyle]} /> */}
     </View>
   );
 };
@@ -74,15 +95,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor:'white'
+    backgroundColor: 'white'
   },
   button: {
-    borderColor:'grey',
+    borderColor: 'grey',
     borderWidth: 1,
-    backgroundColor:'black',
-    // padding: 15,
+    backgroundColor: 'black',
     height: 50,
-    width:'50%',
+    width: '50%',
     borderRadius: 5,
     flexDirection: 'row',
     justifyContent: 'center',
