@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'rea
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
 import CheckBoxGreen from './src/assets/CheckBoxGreen.svg'
 import CheckBoxWhite from './src/assets/CheckBoxWhite.svg'
+import MyButton from './src/components/MyButton';
+import AnimatedButton from './src/components/MyButton2';
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -41,6 +43,7 @@ const App = () => {
 
   return (
     <View style={styles.container}>
+      <AnimatedButton/>
       <TouchableOpacity onPress={handlePress} style={[styles.button, loading || showWhiteIcon ? {backgroundColor: 'grey'} : null, completed ? {backgroundColor:'transparent', borderWidth: 0}: null]}>
         {!loading && !showWhiteIcon && !completed && (
           <Text style={styles.buttonText}>Press this button</Text>
