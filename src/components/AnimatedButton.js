@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Animated } from 'react-native';
 import CheckBoxGreen from '../assets/CheckBoxGreen.svg'
 import CheckBoxWhite from '../assets/CheckBoxWhite.svg'
@@ -6,48 +6,82 @@ import CheckBoxWhite from '../assets/CheckBoxWhite.svg'
 const AnimatedButton = () => {
   const [buttonState, setButtonState] = useState('initial');
   const [buttonText, setButtonText] = useState('Press this button');
-  const [buttonColor, setButtonColor] = useState('black');
+  const buttonColorAnim = useRef(new Animated.Value(0)).current;
   const iconPosition = useRef(new Animated.Value(0)).current;
   const buttonOpacity = useRef(new Animated.Value(1)).current;
+  const indicatorOpacity = useRef(new Animated.Value(1)).current;
+  const iconOpacity = useRef(new Animated.Value(0)).current;
+
+  const buttonColor = buttonColorAnim.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: ['rgb(0, 0, 0)', 'rgb(128, 128, 128)', 'transparent']
+  });
 
   const handlePress = () => {
     setButtonState('loading');
-    setButtonColor('grey');
     setButtonText('');
+
+    Animated.timing(buttonColorAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
 
     setTimeout(() => {
       setButtonState('icon');
-      
-      setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(indicatorOpacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(iconOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
         setButtonState('final');
-        setButtonColor('transparent');
         Animated.parallel([
           Animated.timing(iconPosition, {
             toValue: -22,
             duration: 500,
             useNativeDriver: true,
           }),
-          Animated.timing(buttonOpacity, {
-            toValue: 0.5,
+          Animated.timing(buttonColorAnim, {
+            toValue: 2,
             duration: 500,
             useNativeDriver: true,
           }),
         ]).start();
-      }, 500);
+      });
     }, 2000);
   };
 
   const renderButtonContent = () => {
     switch (buttonState) {
       case 'loading':
-        return <ActivityIndicator color="white" />;
+        return (
+          <Animated.View style={{ opacity: indicatorOpacity }}>
+            <ActivityIndicator color="white" />
+          </Animated.View>
+        );
       case 'icon':
-        return <CheckBoxWhite/>;
       case 'final':
         return (
-          <Animated.View style={{ flexDirection: 'row', alignItems: 'center', transform: [{ translateX: iconPosition }] }}>
-            <CheckBoxGreen/>
-            <Text style={{ marginLeft: 10, color: 'green' }}>Action completed</Text>
+          <Animated.View 
+            style={{ 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              opacity: iconOpacity,
+              transform: [{ translateX: iconPosition }]
+            }}
+          >
+            {/* <Icon name={buttonState === 'icon' ? "check-circle" : "check"} size={24} color="white" /> */}
+            {buttonState === 'icon' ? <CheckBoxWhite/> : <CheckBoxGreen/>}
+            {buttonState === 'final' && (
+              <Text style={{ marginLeft: 10, color: 'green' }}>Action completed</Text>
+            )}
           </Animated.View>
         );
       default:
@@ -66,6 +100,7 @@ const AnimatedButton = () => {
           alignItems: 'center',
           justifyContent: 'center',
           width: 200,
+          overflow: 'hidden',
         }}
       >
         {renderButtonContent()}
