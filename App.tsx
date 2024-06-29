@@ -41,7 +41,7 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handlePress} style={[styles.button, loading ? {backgroundColor: 'grey'} : null, completed ? {backgroundColor:'transparent', borderWidth: 0}: null]}>
+      <TouchableOpacity onPress={handlePress} style={[styles.button, loading || showWhiteIcon ? {backgroundColor: 'grey'} : null, completed ? {backgroundColor:'transparent', borderWidth: 0}: null]}>
         {!loading && !showWhiteIcon && !completed && (
           <Text style={styles.buttonText}>Press this button</Text>
         )}
